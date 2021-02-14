@@ -206,7 +206,7 @@ public class SSLSupport {
       } else if (trustAll) {
          //This is useful for testing but not should be used outside of that purpose
          return InsecureTrustManagerFactory.INSTANCE;
-      } else if (truststorePath == null && (truststoreProvider == null || !"PKCS11".equals(truststoreProvider.toUpperCase()))) {
+      } else if ((truststorePath == null || truststorePath.isEmpty() || truststorePath.toUpperCase().equals("NONE")) && (truststoreProvider == null || !truststoreProvider.toUpperCase().contains("PKCS11"))) {
          return null;
       } else {
          TrustManagerFactory trustMgrFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -255,10 +255,16 @@ public class SSLSupport {
    private static KeyStore loadKeystore(final String keystoreProvider,
                                         final String keystorePath,
                                         final String keystorePassword) throws Exception {
-      KeyStore ks = KeyStore.getInstance(keystoreProvider);
+      KeyStore ks;
+      if (keystorePath == null|| keystorePath.isEmpty() || keystorePath.toUpperCase().equals("NONE")) {
+          ks = KeyStore.getInstance(keystoreProvider, "PKCS11");
+      } else {
+          ks = KeyStore.getInstance(keystoreProvider);
+      }
+       
       InputStream in = null;
       try {
-         if (keystorePath != null) {
+         if (keystorePath != null && !keystorePath.isEmpty() && !keystorePath.toUpperCase().equals("NONE")) {
             URL keystoreURL = SSLSupport.validateStoreURL(keystorePath);
             in = keystoreURL.openStream();
          }
@@ -283,7 +289,8 @@ public class SSLSupport {
    }
 
    private KeyManagerFactory loadKeyManagerFactory() throws Exception {
-      if (keystorePath == null && (keystoreProvider == null || !"PKCS11".equals(keystoreProvider.toUpperCase()))) {
+       
+      if ((keystorePath == null || keystorePath.isEmpty() || keystorePath.toUpperCase().equals("NONE")) && (keystoreProvider == null || !keystoreProvider.toUpperCase().contains("PKCS11"))) {
          return null;
       } else {
          KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
