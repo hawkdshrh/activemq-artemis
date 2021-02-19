@@ -109,8 +109,8 @@ public class ManagementFactory {
          if (jmxConnector.getKeyStorePath() != null) {
             jmxConnectorConfiguration.setKeyStorePath(jmxConnector.getKeyStorePath());
          }
-         if (jmxConnector.getKeyStoreProvider() != null) {
-            jmxConnectorConfiguration.setKeyStoreProvider(jmxConnector.getKeyStoreProvider());
+         if (jmxConnector.getKeyStoreType() != null) {
+            jmxConnectorConfiguration.setKeyStoreType(jmxConnector.getKeyStoreType());
          }
          if (jmxConnector.getKeyStorePassword() != null) {
             jmxConnectorConfiguration.setKeyStorePassword(jmxConnector.getKeyStorePassword());

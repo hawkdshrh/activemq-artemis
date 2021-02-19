@@ -153,6 +153,8 @@ public class NettyAcceptor extends AbstractAcceptor {
    private final int port;
 
    private final String keyStoreProvider;
+   
+   private final String keyStoreType;
 
    // non-final for testing purposes
    private String keyStorePath;
@@ -160,6 +162,8 @@ public class NettyAcceptor extends AbstractAcceptor {
    private final String keyStorePassword;
 
    private final String trustStoreProvider;
+   
+   private final String trustStoreType;
 
    private final String trustStorePath;
 
@@ -282,12 +286,16 @@ public class NettyAcceptor extends AbstractAcceptor {
       if (sslEnabled) {
          keyStoreProvider = ConfigurationHelper.getStringProperty(TransportConstants.KEYSTORE_PROVIDER_PROP_NAME, TransportConstants.DEFAULT_KEYSTORE_PROVIDER, configuration);
 
+         keyStoreType = ConfigurationHelper.getStringProperty(TransportConstants.KEYSTORE_TYPE_PROP_NAME, TransportConstants.DEFAULT_KEYSTORE_TYPE, configuration);
+         
          keyStorePath = ConfigurationHelper.getStringProperty(TransportConstants.KEYSTORE_PATH_PROP_NAME, TransportConstants.DEFAULT_KEYSTORE_PATH, configuration);
 
          keyStorePassword = ConfigurationHelper.getPasswordProperty(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, TransportConstants.DEFAULT_KEYSTORE_PASSWORD, configuration, ActiveMQDefaultConfiguration.getPropMaskPassword(), ActiveMQDefaultConfiguration.getPropPasswordCodec());
 
          trustStoreProvider = ConfigurationHelper.getStringProperty(TransportConstants.TRUSTSTORE_PROVIDER_PROP_NAME, TransportConstants.DEFAULT_TRUSTSTORE_PROVIDER, configuration);
 
+         trustStoreType = ConfigurationHelper.getStringProperty(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, TransportConstants.DEFAULT_TRUSTSTORE_TYPE, configuration);
+         
          trustStorePath = ConfigurationHelper.getStringProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, TransportConstants.DEFAULT_TRUSTSTORE_PATH, configuration);
 
          trustStorePassword = ConfigurationHelper.getPasswordProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, TransportConstants.DEFAULT_TRUSTSTORE_PASSWORD, configuration, ActiveMQDefaultConfiguration.getPropMaskPassword(), ActiveMQDefaultConfiguration.getPropPasswordCodec());
@@ -311,9 +319,11 @@ public class NettyAcceptor extends AbstractAcceptor {
          trustManagerFactoryPlugin = ConfigurationHelper.getStringProperty(TransportConstants.TRUST_MANAGER_FACTORY_PLUGIN_PROP_NAME, TransportConstants.DEFAULT_TRUST_MANAGER_FACTORY_PLUGIN, configuration);
       } else {
          keyStoreProvider = TransportConstants.DEFAULT_KEYSTORE_PROVIDER;
+         keyStoreType = TransportConstants.DEFAULT_KEYSTORE_TYPE;
          keyStorePath = TransportConstants.DEFAULT_KEYSTORE_PATH;
          keyStorePassword = TransportConstants.DEFAULT_KEYSTORE_PASSWORD;
          trustStoreProvider = TransportConstants.DEFAULT_TRUSTSTORE_PROVIDER;
+         trustStoreType = TransportConstants.DEFAULT_TRUSTSTORE_TYPE;
          trustStorePath = TransportConstants.DEFAULT_TRUSTSTORE_PATH;
          trustStorePassword = TransportConstants.DEFAULT_TRUSTSTORE_PASSWORD;
          crlPath = TransportConstants.DEFAULT_CRL_PATH;
@@ -605,8 +615,8 @@ public class NettyAcceptor extends AbstractAcceptor {
       try {
          checkSSLConfiguration();
          context =  SSLContextFactoryProvider.getSSLContextFactory().getSSLContext(configuration,
-                 keyStoreProvider, keyStorePath, keyStorePassword,
-                 trustStoreProvider, trustStorePath, trustStorePassword,
+                 keyStoreProvider, keyStoreType, keyStorePath, keyStorePassword,
+                 trustStoreProvider, trustStoreType, trustStorePath, trustStorePassword,
                  crlPath, trustManagerFactoryPlugin, TransportConstants.DEFAULT_TRUST_ALL);
       } catch (Exception e) {
          IllegalStateException ise = new IllegalStateException("Unable to create NettyAcceptor for " + host + ":" + port, e);
@@ -636,7 +646,7 @@ public class NettyAcceptor extends AbstractAcceptor {
       if (configuration.containsKey(TransportConstants.SSL_CONTEXT_PROP_NAME)) {
          return;
       }
-      if (kerb5Config == null && keyStorePath == null && TransportConstants.DEFAULT_TRUSTSTORE_PROVIDER.equals(keyStoreProvider)) {
+      if (kerb5Config == null && keyStorePath == null && TransportConstants.DEFAULT_TRUSTSTORE_TYPE.equals(keyStoreType)) {
          throw new IllegalArgumentException("If \"" + TransportConstants.SSL_ENABLED_PROP_NAME + "\" is true then \"" + TransportConstants.KEYSTORE_PATH_PROP_NAME + "\" must be non-null " + "unless an alternative \"" + TransportConstants.KEYSTORE_PROVIDER_PROP_NAME + "\" has been specified.");
       }
    }
@@ -647,9 +657,11 @@ public class NettyAcceptor extends AbstractAcceptor {
          checkSSLConfiguration();
          context = new SSLSupport()
             .setKeystoreProvider(keyStoreProvider)
+            .setKeystoreType(keyStoreType)
             .setKeystorePath(keyStorePath)
             .setKeystorePassword(keyStorePassword)
             .setTruststoreProvider(trustStoreProvider)
+            .setTruststoreType(trustStoreType)
             .setTruststorePath(trustStorePath)
             .setTruststorePassword(trustStorePassword)
             .setSslProvider(sslProvider)

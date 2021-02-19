@@ -33,9 +33,11 @@ public interface SSLContextFactory extends Comparable<SSLContextFactory> {
     * Obtain a SSLContext from the configuration.
     * @param configuration
     * @param keystoreProvider
+    * @param keystoreType
     * @param keystorePath
     * @param keystorePassword
     * @param truststoreProvider
+    * @param truststoreType
     * @param truststorePath
     * @param truststorePassword
     * @param crlPath
@@ -45,8 +47,8 @@ public interface SSLContextFactory extends Comparable<SSLContextFactory> {
     * @throws Exception
     */
    SSLContext getSSLContext(Map<String, Object> configuration,
-           String keystoreProvider, String keystorePath, String keystorePassword,
-           String truststoreProvider, String truststorePath, String truststorePassword,
+           String keystoreProvider, String keystoreType, String keystorePath, String keystorePassword,
+           String truststoreProvider, String truststoreType, String truststorePath, String truststorePassword,
            String crlPath, String trustManagerFactoryPlugin, boolean trustAll) throws Exception;
 
    default void clearSSLContexts() {

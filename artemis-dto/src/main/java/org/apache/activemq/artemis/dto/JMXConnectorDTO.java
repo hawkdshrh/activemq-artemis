@@ -51,6 +51,9 @@ public class JMXConnectorDTO {
 
    @XmlAttribute (name = "key-store-provider")
    String keyStoreProvider;
+   
+   @XmlAttribute (name = "key-store-type")
+   String keyStoreType;   
 
    @XmlAttribute (name = "key-store-path")
    String keyStorePath;
@@ -59,7 +62,10 @@ public class JMXConnectorDTO {
    String keyStorePassword;
 
    @XmlAttribute (name = "trust-store-provider")
-   String trustStoreProvider;
+   String trustStoreProvider;   
+   
+   @XmlAttribute (name = "trust-store-type")
+   String trustStoreType;
 
    @XmlAttribute (name = "trust-store-path")
    String trustStorePath;
@@ -101,6 +107,10 @@ public class JMXConnectorDTO {
    public String getKeyStoreProvider() {
       return keyStoreProvider;
    }
+   
+   public String getKeyStoreType() {
+      return keyStoreType;
+   }   
 
    public String getKeyStorePath() {
       return keyStorePath;
@@ -113,6 +123,10 @@ public class JMXConnectorDTO {
    public String getTrustStoreProvider() {
       return trustStoreProvider;
    }
+   
+   public String getTrustStoreType() {
+      return trustStoreType;
+   }   
 
    public String getTrustStorePath() {
       return trustStorePath;

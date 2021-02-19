@@ -41,14 +41,14 @@ public class CachingSSLContextFactory extends DefaultSSLContextFactory {
 
    @Override
    public SSLContext getSSLContext(Map<String, Object> configuration,
-           String keystoreProvider, String keystorePath, String keystorePassword,
-           String truststoreProvider, String truststorePath, String truststorePassword,
+           String keystoreProvider, String keystoreType, String keystorePath, String keystorePassword,
+           String truststoreProvider, String truststoreType, String truststorePath, String truststorePassword,
            String crlPath, String trustManagerFactoryPlugin, boolean trustAll) throws Exception {
-      String sslContextName = getSSLContextName(configuration, keystorePath, keystoreProvider, truststorePath, truststoreProvider);
+      String sslContextName = getSSLContextName(configuration, keystorePath, keystoreProvider, keystoreType, truststorePath, truststoreProvider, truststoreType);
       if (!SSL_CONTEXTS.containsKey(sslContextName)) {
          SSL_CONTEXTS.put(sslContextName, createSSLContext(configuration,
-              keystoreProvider, keystorePath, keystorePassword,
-              truststoreProvider, truststorePath, truststorePassword,
+              keystoreProvider, keystoreType, keystorePath, keystorePassword,
+              truststoreProvider, truststoreType, truststorePath, truststorePassword,
               crlPath, trustManagerFactoryPlugin, trustAll));
       }
       return SSL_CONTEXTS.get(sslContextName);
@@ -57,22 +57,24 @@ public class CachingSSLContextFactory extends DefaultSSLContextFactory {
    /**
     * Obtain the sslContextName :
     *  - if available the 'sslContext' from the configuration
-    *  - otherwise if available the keyStorePath + '_' + keystoreProvider
-    *  - otherwise the truststorePath + '_' + truststoreProvider.
+    *  - otherwise if available the keyStorePath + '_' + keystoreProvider + '_' + keystoreType
+    *  - otherwise the truststorePath + '_' + truststoreProvider + '_' + truststoreType.
     * @param configuration
     * @param keyStorePath
     * @param keystoreProvider
+    * @param keystoreType
     * @param truststorePath
     * @param truststoreProvider
+    * @param truststoreType
     * @return the ley associated to the SSLContext.
     */
-   protected String getSSLContextName(Map<String, Object> configuration, String keyStorePath, String keystoreProvider, String truststorePath, String truststoreProvider) {
+   protected String getSSLContextName(Map<String, Object> configuration, String keyStorePath, String keystoreProvider, String keystoreType, String truststorePath, String truststoreProvider, String truststoreType) {
       String sslContextName = ConfigurationHelper.getStringProperty(TransportConstants.SSL_CONTEXT_PROP_NAME, null, configuration);
       if (sslContextName == null) {
          if (keyStorePath != null) {
-            return keyStorePath + '_' + keystoreProvider;
+            return keyStorePath + '_' + keystoreProvider + '_' + keystoreType;
          }
-         return truststorePath + '_' + truststoreProvider;
+         return truststorePath + '_' + truststoreProvider + '_' + truststoreType;
       }
       return sslContextName;
    }

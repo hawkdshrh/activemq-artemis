@@ -17,6 +17,7 @@
 package org.apache.activemq.artemis.core.config;
 
 import java.security.KeyStore;
+import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 
 public class JMXConnectorConfiguration {
    private int rmiRegistryPort;
@@ -29,10 +30,12 @@ public class JMXConnectorConfiguration {
    private String objectName = "connector:name=rmi";
    private String authenticatorType = "password";
    private boolean secured =  false;
-   private String keyStoreProvider = KeyStore.getDefaultType();
+   private String keyStoreProvider = TransportConstants.DEFAULT_KEYSTORE_PROVIDER;
+   private String keyStoreType = KeyStore.getDefaultType();
    private String keyStorePath;
    private String keyStorePassword;
-   private String trustStoreProvider = KeyStore.getDefaultType();
+   private String trustStoreProvider = TransportConstants.DEFAULT_TRUSTSTORE_PROVIDER;
+   private String trustStoreType = KeyStore.getDefaultType();
    private String trustStorePath;
    private String trustStorePassword;
 
@@ -88,13 +91,21 @@ public class JMXConnectorConfiguration {
    public boolean isSecured() {
       return secured;
    }
-
+   
    public String getKeyStoreProvider() {
       return keyStoreProvider;
    }
 
    public void setKeyStoreProvider(String keyStoreProvider) {
       this.keyStoreProvider = keyStoreProvider;
+   }   
+
+   public String getKeyStoreType() {
+      return keyStoreType;
+   }
+
+   public void setKeyStoreType(String keyStoreType) {
+      this.keyStoreType = keyStoreType;
    }
 
    public String getKeyStorePath() {
@@ -119,6 +130,14 @@ public class JMXConnectorConfiguration {
 
    public void setTrustStoreProvider(String trustStoreProvider) {
       this.trustStoreProvider = trustStoreProvider;
+   }   
+   
+   public String getTrustStoreType() {
+      return trustStoreType;
+   }
+
+   public void setTrustStoreType(String trustStoreType) {
+      this.trustStoreType = trustStoreType;
    }
 
    public String getTrustStorePath() {

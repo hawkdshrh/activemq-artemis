@@ -29,18 +29,18 @@ public class DefaultSSLContextFactory implements SSLContextFactory {
 
    @Override
    public SSLContext getSSLContext(Map<String, Object> configuration,
-           String keystoreProvider, String keystorePath, String keystorePassword,
-           String truststoreProvider, String truststorePath, String truststorePassword,
+           String keystoreProvider, String keystoreType, String keystorePath, String keystorePassword,
+           String truststoreProvider, String truststoreType, String truststorePath, String truststorePassword,
            String crlPath, String trustManagerFactoryPlugin, boolean trustAll) throws Exception {
       return createSSLContext(configuration,
-              keystoreProvider, keystorePath, keystorePassword,
-              truststoreProvider, truststorePath, truststorePassword,
+              keystoreProvider, keystoreType, keystorePath, keystorePassword,
+              truststoreProvider, truststoreType, truststorePath, truststorePassword,
               crlPath, trustManagerFactoryPlugin, trustAll);
    }
 
    protected SSLContext createSSLContext(Map<String, Object> configuration,
-           String keystoreProvider, String keystorePath, String keystorePassword,
-           String truststoreProvider, String truststorePath, String truststorePassword,
+           String keystoreProvider, String keystoreType, String keystorePath, String keystorePassword,
+           String truststoreProvider, String truststoreType, String truststorePath, String truststorePassword,
            String crlPath, String trustManagerFactoryPlugin, boolean trustAll) throws Exception {
       if (log.isDebugEnabled()) {
          final StringBuilder builder = new StringBuilder();
@@ -53,9 +53,11 @@ public class DefaultSSLContextFactory implements SSLContextFactory {
       }
       return new SSLSupport()
               .setKeystoreProvider(keystoreProvider)
+              .setKeystoreType(keystoreType)
               .setKeystorePath(keystorePath)
               .setKeystorePassword(keystorePassword)
               .setTruststoreProvider(truststoreProvider)
+              .setTruststoreType(truststoreType)
               .setTruststorePath(truststorePath)
               .setTruststorePassword(truststorePassword)
               .setTrustAll(trustAll)

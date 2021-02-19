@@ -142,9 +142,11 @@ public class NettyConnector extends AbstractConnector {
    public static final String JAVAX_TRUSTSTORE_PASSWORD_PROP_NAME = "javax.net.ssl.trustStorePassword";
    public static final String JAVAX_TRUSTSTORE_PROVIDER_PROP_NAME = "javax.net.ssl.trustStoreType";
    public static final String ACTIVEMQ_KEYSTORE_PROVIDER_PROP_NAME = "org.apache.activemq.ssl.keyStoreProvider";
+   public static final String ACTIVEMQ_KEYSTORE_TYPE_PROP_NAME = "org.apache.activemq.ssl.keyStoreType";
    public static final String ACTIVEMQ_KEYSTORE_PATH_PROP_NAME = "org.apache.activemq.ssl.keyStore";
    public static final String ACTIVEMQ_KEYSTORE_PASSWORD_PROP_NAME = "org.apache.activemq.ssl.keyStorePassword";
    public static final String ACTIVEMQ_TRUSTSTORE_PROVIDER_PROP_NAME = "org.apache.activemq.ssl.trustStoreProvider";
+   public static final String ACTIVEMQ_TRUSTSTORE_TYPE_PROP_NAME = "org.apache.activemq.ssl.trustStoreType";
    public static final String ACTIVEMQ_TRUSTSTORE_PATH_PROP_NAME = "org.apache.activemq.ssl.trustStore";
    public static final String ACTIVEMQ_TRUSTSTORE_PASSWORD_PROP_NAME = "org.apache.activemq.ssl.trustStorePassword";
 
@@ -226,12 +228,16 @@ public class NettyConnector extends AbstractConnector {
    private int localPort;
 
    private String keyStoreProvider;
+   
+   private String keyStoreType;
 
    private String keyStorePath;
 
    private String keyStorePassword;
 
    private String trustStoreProvider;
+   
+   private String trustStoreType;
 
    private String trustStorePath;
 
@@ -392,12 +398,16 @@ public class NettyConnector extends AbstractConnector {
       localPort = ConfigurationHelper.getIntProperty(TransportConstants.LOCAL_PORT_PROP_NAME, TransportConstants.DEFAULT_LOCAL_PORT, configuration);
       if (sslEnabled) {
          keyStoreProvider = ConfigurationHelper.getStringProperty(TransportConstants.KEYSTORE_PROVIDER_PROP_NAME, TransportConstants.DEFAULT_KEYSTORE_PROVIDER, configuration);
+         
+         keyStoreType = ConfigurationHelper.getStringProperty(TransportConstants.KEYSTORE_TYPE_PROP_NAME, TransportConstants.DEFAULT_KEYSTORE_TYPE, configuration);
 
          keyStorePath = ConfigurationHelper.getStringProperty(TransportConstants.KEYSTORE_PATH_PROP_NAME, TransportConstants.DEFAULT_KEYSTORE_PATH, configuration);
 
          keyStorePassword = ConfigurationHelper.getPasswordProperty(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, TransportConstants.DEFAULT_KEYSTORE_PASSWORD, configuration, ActiveMQDefaultConfiguration.getPropMaskPassword(), ActiveMQDefaultConfiguration.getPropPasswordCodec());
 
          trustStoreProvider = ConfigurationHelper.getStringProperty(TransportConstants.TRUSTSTORE_PROVIDER_PROP_NAME, TransportConstants.DEFAULT_TRUSTSTORE_PROVIDER, configuration);
+         
+         trustStoreType = ConfigurationHelper.getStringProperty(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, TransportConstants.DEFAULT_TRUSTSTORE_TYPE, configuration);
 
          trustStorePath = ConfigurationHelper.getStringProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, TransportConstants.DEFAULT_TRUSTSTORE_PATH, configuration);
 
@@ -426,9 +436,11 @@ public class NettyConnector extends AbstractConnector {
          trustManagerFactoryPlugin = ConfigurationHelper.getStringProperty(TransportConstants.TRUST_MANAGER_FACTORY_PLUGIN_PROP_NAME, TransportConstants.DEFAULT_TRUST_MANAGER_FACTORY_PLUGIN, configuration);
       } else {
          keyStoreProvider = TransportConstants.DEFAULT_KEYSTORE_PROVIDER;
+         keyStoreType = TransportConstants.DEFAULT_KEYSTORE_TYPE;
          keyStorePath = TransportConstants.DEFAULT_KEYSTORE_PATH;
          keyStorePassword = TransportConstants.DEFAULT_KEYSTORE_PASSWORD;
          trustStoreProvider = TransportConstants.DEFAULT_TRUSTSTORE_PROVIDER;
+         trustStoreType = TransportConstants.DEFAULT_TRUSTSTORE_TYPE;
          trustStorePath = TransportConstants.DEFAULT_TRUSTSTORE_PATH;
          trustStorePassword = TransportConstants.DEFAULT_TRUSTSTORE_PASSWORD;
          crlPath = TransportConstants.DEFAULT_CRL_PATH;
@@ -561,33 +573,41 @@ public class NettyConnector extends AbstractConnector {
 
       final String realKeyStorePath;
       final String realKeyStoreProvider;
+      final String realKeyStoreType;
       final String realKeyStorePassword;
       final String realTrustStorePath;
       final String realTrustStoreProvider;
+      final String realTrustStoreType;
       final String realTrustStorePassword;
 
       if (sslEnabled) {
          if (forceSSLParameters) {
             realKeyStorePath = keyStorePath;
             realKeyStoreProvider = keyStoreProvider;
+            realKeyStoreType = keyStoreType;
             realKeyStorePassword = keyStorePassword;
             realTrustStorePath = trustStorePath;
             realTrustStoreProvider = trustStoreProvider;
+            realTrustStoreType = trustStoreType;
             realTrustStorePassword = trustStorePassword;
          } else {
             realKeyStorePath = Stream.of(System.getProperty(ACTIVEMQ_KEYSTORE_PATH_PROP_NAME), System.getProperty(JAVAX_KEYSTORE_PATH_PROP_NAME), keyStorePath).map(v -> useDefaultSslContext ? keyStorePath : v).filter(Objects::nonNull).findFirst().orElse(null);
             realKeyStorePassword = Stream.of(System.getProperty(ACTIVEMQ_KEYSTORE_PASSWORD_PROP_NAME), System.getProperty(JAVAX_KEYSTORE_PASSWORD_PROP_NAME), keyStorePassword).map(v -> useDefaultSslContext ? keyStorePassword : v).filter(Objects::nonNull).findFirst().orElse(null);
             realKeyStoreProvider = Stream.of(System.getProperty(ACTIVEMQ_KEYSTORE_PROVIDER_PROP_NAME), keyStoreProvider).map(v -> useDefaultSslContext ? keyStoreProvider : v).filter(Objects::nonNull).findFirst().orElse(null);
+            realKeyStoreType = Stream.of(System.getProperty(ACTIVEMQ_KEYSTORE_TYPE_PROP_NAME), keyStoreType).map(v -> useDefaultSslContext ? keyStoreType : v).filter(Objects::nonNull).findFirst().orElse(null);
             realTrustStorePath = Stream.of(System.getProperty(ACTIVEMQ_TRUSTSTORE_PATH_PROP_NAME), System.getProperty(JAVAX_TRUSTSTORE_PATH_PROP_NAME), trustStorePath).map(v -> useDefaultSslContext ? trustStorePath : v).filter(Objects::nonNull).findFirst().orElse(null);
             realTrustStorePassword = Stream.of(System.getProperty(ACTIVEMQ_TRUSTSTORE_PASSWORD_PROP_NAME), System.getProperty(JAVAX_TRUSTSTORE_PASSWORD_PROP_NAME), trustStorePassword).map(v -> useDefaultSslContext ? trustStorePassword : v).filter(Objects::nonNull).findFirst().orElse(null);
             realTrustStoreProvider = Stream.of(System.getProperty(ACTIVEMQ_TRUSTSTORE_PROVIDER_PROP_NAME), trustStoreProvider).map(v -> useDefaultSslContext ? trustStoreProvider : v).filter(Objects::nonNull).findFirst().orElse(null);
+            realTrustStoreType = Stream.of(System.getProperty(ACTIVEMQ_TRUSTSTORE_TYPE_PROP_NAME), trustStoreType).map(v -> useDefaultSslContext ? trustStoreType : v).filter(Objects::nonNull).findFirst().orElse(null);
          }
       } else {
          realKeyStorePath = null;
          realKeyStoreProvider = null;
+         realKeyStoreType = null;
          realKeyStorePassword = null;
          realTrustStorePath = null;
          realTrustStoreProvider = null;
+         realTrustStoreType = null;
          realTrustStorePassword = null;
       }
 
@@ -623,9 +643,9 @@ public class NettyConnector extends AbstractConnector {
 
                SSLEngine engine;
                if (sslProvider.equals(TransportConstants.OPENSSL_PROVIDER)) {
-                  engine = loadOpenSslEngine(channel.alloc(), realKeyStoreProvider, realKeyStorePath, realKeyStorePassword, realTrustStoreProvider, realTrustStorePath, realTrustStorePassword);
+                  engine = loadOpenSslEngine(channel.alloc(), realKeyStoreProvider, realKeyStoreType, realKeyStorePath, realKeyStorePassword, realTrustStoreProvider, realTrustStoreType, realTrustStorePath, realTrustStorePassword);
                } else {
-                  engine = loadJdkSslEngine(realKeyStoreProvider, realKeyStorePath, realKeyStorePassword, realTrustStoreProvider, realTrustStorePath, realTrustStorePassword);
+                  engine = loadJdkSslEngine(realKeyStoreProvider, realKeyStoreType, realKeyStorePath, realKeyStorePassword, realTrustStoreProvider, realTrustStoreType, realTrustStorePath, realTrustStorePassword);
                }
 
                engine.setUseClientMode(true);
@@ -711,14 +731,16 @@ public class NettyConnector extends AbstractConnector {
    }
 
    private SSLEngine loadJdkSslEngine(String keystoreProvider,
+                                      String keystoreType,
                                       String keystorePath,
                                       String keystorePassword,
                                       String truststoreProvider,
+                                      String truststoreType,
                                       String truststorePath,
                                       String truststorePassword) throws Exception {
       SSLContext context = SSLContextFactoryProvider.getSSLContextFactory().getSSLContext(configuration,
-              keystoreProvider, keystorePath, keystorePassword,
-           truststoreProvider, truststorePath, truststorePassword,
+              keystoreProvider, keystoreType, keystorePath, keystorePassword,
+           truststoreProvider, truststoreType, truststorePath, truststorePassword,
            crlPath, trustManagerFactoryPlugin, trustAll);
       Subject subject = null;
       if (kerb5Config != null) {
@@ -743,18 +765,22 @@ public class NettyConnector extends AbstractConnector {
 
    private SSLEngine loadOpenSslEngine(ByteBufAllocator alloc,
                                        String keystoreProvider,
+                                       String keystoreType,
                                        String keystorePath,
                                        String keystorePassword,
                                        String truststoreProvider,
+                                       String truststoreType,
                                        String truststorePath,
                                        String truststorePassword) throws Exception {
 
 
       SslContext context = new SSLSupport()
          .setKeystoreProvider(keystoreProvider)
+         .setKeystoreType(keystoreType)     
          .setKeystorePath(keystorePath)
          .setKeystorePassword(keystorePassword)
          .setTruststoreProvider(truststoreProvider)
+         .setTruststoreType(truststoreType)     
          .setTruststorePath(truststorePath)
          .setTruststorePassword(truststorePassword)
          .setSslProvider(sslProvider)
