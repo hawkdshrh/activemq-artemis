@@ -277,7 +277,7 @@ public class SSLSupport {
                                         final String keystorePath,
                                         final String keystorePassword) throws Exception {
        
-      KeyStore ks = KeyStore.getInstance(keystoreProvider, keystoreType);
+      KeyStore ks = KeyStore.getInstance(keystoreType, keystoreProvider);
        
       InputStream in = null;
       try {
