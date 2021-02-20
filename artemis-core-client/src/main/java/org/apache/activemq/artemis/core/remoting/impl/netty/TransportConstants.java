@@ -220,7 +220,7 @@ public class TransportConstants {
 
    public static final int DEFAULT_STOMP_PORT = 61613;
 
-   public static final String DEFAULT_KEYSTORE_PROVIDER = "SUN";
+   public static final String DEFAULT_KEYSTORE_PROVIDER = "SunJSSE";
    
    public static final String DEFAULT_KEYSTORE_TYPE = "JKS";
 
@@ -228,7 +228,7 @@ public class TransportConstants {
 
    public static final String DEFAULT_KEYSTORE_PASSWORD = null;
 
-   public static final String DEFAULT_TRUSTSTORE_PROVIDER = "SUN";
+   public static final String DEFAULT_TRUSTSTORE_PROVIDER = "SunJSSE";
    
    public static final String DEFAULT_TRUSTSTORE_TYPE = "JKS";
 
